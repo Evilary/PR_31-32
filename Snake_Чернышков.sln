@@ -5,6 +5,8 @@ VisualStudioVersion = 17.13.35931.197 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snake_Чернышков", "Snake_Чернышков\Snake_Чернышков.csproj", "{E83C0E2D-70A2-4A49-B431-E5615B7B34D3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{2BDCFA92-763D-48C4-BA8E-380EC62BEA39}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{E83C0E2D-70A2-4A49-B431-E5615B7B34D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E83C0E2D-70A2-4A49-B431-E5615B7B34D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E83C0E2D-70A2-4A49-B431-E5615B7B34D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BDCFA92-763D-48C4-BA8E-380EC62BEA39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BDCFA92-763D-48C4-BA8E-380EC62BEA39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BDCFA92-763D-48C4-BA8E-380EC62BEA39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BDCFA92-763D-48C4-BA8E-380EC62BEA39}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
