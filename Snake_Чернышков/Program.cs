@@ -5,6 +5,8 @@ using System.Net;
 using System.Text;
 using Common;
 using Newtonsoft.Json;
+using System.Linq;
+using System.Threading;
 
 namespace Snake_Чернышков
 {
@@ -96,6 +98,128 @@ namespace Snake_Чернышков
                 Console.WriteLine("Возникло исключение: " + ex.Message);
             }
         }
+
+        public static int AddSnake()
+        {
+            ViewModelGames viewModelGamesPlayer = new ViewModelGames();
+            viewModelGamesPlayer.SnakesPlayers = new Snakes()
+            {
+                Points = new List<Snakes.Point>() {
+            new Snakes.Point() { X = 30, Y = 10 },
+            new Snakes.Point() { X = 20, Y = 10 },
+            new Snakes.Point() { X = 10, Y = 10 },
+        },
+                direction = Snakes.Direction.Start
+            };
+            viewModelGamesPlayer.Points = new Snakes.Point(new Random().Next(10, 783), new Random().Next(10, 410));
+            viewModelGames.Add(viewModelGamesPlayer);
+            return viewModelGames.FindIndex(x => x == viewModelGamesPlayer);
+        }
+
+        public static void Game()
+        {
+            while (true)
+            {
+                Thread.Sleep(100);
+
+                List<ViewModelGames> RemoveSnakes = viewModelGames.FindAll(x => x.SnakesPlayers.GameOver);
+                if (RemoveSnakes.Count > 0)
+                {
+                    foreach (ViewModelGames DeadSnake in RemoveSnakes)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"Отключился пользователь: {remoteIPAddress.Find(x => x.IdSnake == DeadSnake.IdSnake).IPAddress}:{remoteIPAddress.Find(x => x.IdSnake == DeadSnake.IdSnake).Port}");
+                        remoteIPAddress.RemoveAll(x => x.IdSnake == DeadSnake.IdSnake);
+                    }
+                    viewModelGames.RemoveAll(x => x.SnakesPlayers.GameOver);
+                }
+
+                foreach (ViewModelUserSettings User in remoteIPAddress)
+                {
+                    Snakes Snake = viewModelGames.Find(x => x.IdSnake == User.IdSnake).SnakesPlayers;
+                    for (int i = Snake.Points.Count - 1; i >= 0; i--)
+                    {
+                        if (i != 0)
+                        {
+                            Snake.Points[i] = Snake.Points[i - 1];
+                        }
+                        else
+                        {
+                            int Speed = 10 + (int)(Snake.Points.Count / 10);
+                            if (Speed > MaxSpeed) Speed = MaxSpeed;
+
+                            if (Snake.direction == Snakes.Direction.Start)
+                            {
+                            }
+                            else if (Snake.direction == Snakes.Direction.Down)
+                            {
+                                Snake.Points[0] = new Snakes.Point() { X = Snake.Points[0].X, Y = Snake.Points[0].Y + Speed };
+                            }
+                            else if (Snake.direction == Snakes.Direction.Up)
+                            {
+                                Snake.Points[0] = new Snakes.Point() { X = Snake.Points[0].X, Y = Snake.Points[0].Y - Speed };
+                            }
+                            else if (Snake.direction == Snakes.Direction.Right)
+                            {
+                                Snake.Points[0] = new Snakes.Point() { X = Snake.Points[0].X + Speed, Y = Snake.Points[0].Y };
+                            }
+                            else if (Snake.direction == Snakes.Direction.Left)
+                            {
+                                Snake.Points[0] = new Snakes.Point() { X = Snake.Points[0].X - Speed, Y = Snake.Points[0].Y };
+                            }
+                        }
+                    }
+
+                    if (Snake.Points[0].X < 0 || Snake.Points[0].X > 783 || Snake.Points[0].Y < 0 || Snake.Points[0].Y > 410)
+                    {
+                        Snake.GameOver = true;
+                    }
+
+                    if (Snake.direction != Snakes.Direction.Start)
+                    {
+                        for (int i = 1; i < Snake.Points.Count; i++)
+                        {
+                            if (Snake.Points[0].X >= Snake.Points[i].X - 5 && Snake.Points[0].X <= Snake.Points[i].X + 5 && Snake.Points[0].Y >= Snake.Points[i].Y - 5 && Snake.Points[0].Y <= Snake.Points[i].Y + 5)
+                            {
+                                Snake.GameOver = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (Snake.Points[0].X >= viewModelGames.Find(x => x.IdSnake == User.IdSnake).Points.X - 15 && Snake.Points[0].X <= viewModelGames.Find(x => x.IdSnake == User.IdSnake).Points.X + 15 && Snake.Points[0].Y >= viewModelGames.Find(x => x.IdSnake == User.IdSnake).Points.Y - 15 && Snake.Points[0].Y <= viewModelGames.Find(x => x.IdSnake == User.IdSnake).Points.Y + 15)
+                    {
+                        viewModelGames.Find(x => x.IdSnake == User.IdSnake).Points = new Snakes.Point(new Random().Next(10, 783), new Random().Next(10, 410));
+
+                        int X = Snake.Points[Snake.Points.Count - 1].X;
+                        int Y = Snake.Points[Snake.Points.Count - 1].Y;
+                        Snake.Points.Add(new Snakes.Point(X, Y));
+
+                        Leaders.Add(new Leaders()
+                        {
+                            Name = User.Name,
+                            Points = Snake.Points.Count
+                        });
+
+                        Leaders = Leaders.OrderByDescending(x => x.Points).ThenBy(x => x.Name).ToList();
+                        viewModelGames.Find(x => x.IdSnake == User.IdSnake).Top = Leaders.FindIndex(x => x.Points == Snake.Points.Count && x.Name == User.Name) + 1;
+                    }
+
+                    if (Snake.GameOver)
+                    {
+                        Leaders.Add(new Leaders()
+                        {
+                            Name = User.Name,
+                            Points = Snake.Points.Count
+                        });
+                        SaveLeaders();
+                    }
+                }
+                Send();
+            }
+        }
+
+
 
 
     }
