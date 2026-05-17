@@ -20,10 +20,6 @@ namespace Snake_Чернышков
         private static int localPort = 5001;
         public static int MaxSpeed = 15;
 
-        static void Main(string[] args)
-        {
-
-        }
 
         private static void Send()
         {
@@ -117,7 +113,7 @@ namespace Snake_Чернышков
             return viewModelGames.FindIndex(x => x == viewModelGamesPlayer);
         }
 
-        public static void Game()
+        public static void Timer()
         {
             while (true)
             {
